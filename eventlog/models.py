@@ -4,7 +4,10 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from django.contrib.auth.models import User
+try:
+    from django.contrib.auth import get_user_model  # Django 1.5
+except ImportError:
+    from account.future_1_5 import get_user_model
 
 import jsonfield
 
@@ -15,7 +18,7 @@ PUSHER_CONFIG = getattr(settings, "PUSHER_CONFIG", None)
 
 
 class Log(models.Model):
-    
+    User = get_user_model()
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(default=timezone.now, db_index=True)
     action = models.CharField(max_length=50, db_index=True)
